@@ -1,131 +1,154 @@
-# Diffusion Model for Face Generation  
+# Diffusion Model for Face Generation
+
 ## EEEM068: Applied Machine Learning – Part B
 
 This project implements a Denoising Diffusion Probabilistic Model (DDPM) using a UNet architecture for unconditional face image generation.
 
 ---
 
+## Overview
+
+The model learns to generate realistic human faces by reversing a gradual noise corruption process. The pipeline includes training, sampling, and evaluation using standard generative metrics.
+
+---
+
 ## Project Structure
-partB_unet/
+
+```
+partB/
+├── src/
+│   ├── model.py              # UNet architecture
+│   ├── scheduler.py          # DDPM scheduler (cosine schedule)
+│   ├── train.py              # Training script
+│   └── generate.py           # Sampling (DDIM)
 │
-├── model.py # UNet architecture
-├── scheduler.py # DDPM scheduler (cosine noise schedule)
-├── train.py # Training script
-├── generate.py # Image generation (DDIM sampling)
-├── diffusion_visualize_final.py # Forward & reverse diffusion visualization
-├── fid_final.py # FID computation
-├── kid.py # KID computation
+├── evaluation/
+│   ├── compute_fid.py        # FID computation
+│   └── compute_kid.py        # KID computation
 │
-├── checkpoints/
-│ └── unet_epoch_60.pt # Trained model
+├── visualization/
+│   ├── diffusion_visualize.py   # Forward & reverse diffusion
+│   └── plot_loss.py             # Training loss curve
 │
 ├── outputs/
-│ ├── images/
-│ │ ├── generated/ # Individual generated images
-│ │ ├── generated_epoch60.png # Grid of generated samples
-│ │ ├── forward_diffusion.png
-│ │ └── reverse_diffusion.png
-│ │
-│ └── metrics/
-│ ├── fid.json
-│ └── kid.json
+│   ├── images/               # Generated samples
+│   └── metrics/              # FID & KID scores
 │
-└── data/
-└── celeba_hq/ # Dataset
+├── checkpoints/              # Model weights (not included)
+├── data/                     # Dataset (not included)
+│   └── celeba_hq/
+│
+├── requirements.txt
+└── README.md
+```
 
 ---
 
 ## Objective
 
-- Train a diffusion model on face images  
-- Generate realistic samples from noise  
-- Evaluate generation quality using FID and KID  
+* Train a diffusion model on face images
+* Generate realistic samples from noise
+* Evaluate generation quality using FID and KID
 
 ---
 
 ## Methodology
 
 ### Model
-- UNet-based architecture  
-- Residual blocks with skip connections  
-- Sinusoidal time embeddings  
+
+* UNet-based encoder-decoder architecture
+* Residual blocks with skip connections
+* Sinusoidal time embeddings
 
 ### Diffusion Process
-- Forward diffusion: gradual addition of Gaussian noise  
-- Reverse diffusion: learned denoising process  
+
+* Forward diffusion: gradual addition of Gaussian noise
+* Reverse diffusion: learned denoising process
 
 ### Noise Schedule
-- Cosine schedule for improved stability  
+
+* Cosine schedule for improved stability
 
 ### Sampling
-- DDIM sampling for faster and more stable generation  
+
+* DDIM sampling for faster and stable generation
+
+---
+
+## Setup
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
 ## Training
 
 ```bash
-python train.py \
-  --data_dir ./data/celeba_hq \
-  --output_dir ./checkpoints \
-  --epochs 60 \
+python src/train.py \
+  --data_dir data \
+  --output_dir checkpoints \
+  --epochs 120 \
   --batch_size 4
-  --learning_rate 1e-4 \
-  --num_workers 4
 ```
-Generation
-python generate.py \
+
+---
+
+## Generation
+
+```bash
+python src/generate.py \
   --checkpoint checkpoints/unet_epoch_60.pt \
-  --num_images 300
+  --output_dir outputs/images \
+  --num_images 100 \
+  --batch_size 4 \
+  --sample_steps 100
+```
 
-Outputs:
+---
 
-outputs/images/generated/ (individual images)
-outputs/images/generated_epoch60.png (grid)
-Diffusion Visualization
-python diffusion_visualize_final.py
+## Evaluation
 
-Outputs:
+### FID
 
-forward_diffusion.png – image to noise
-reverse_diffusion.png – noise to image
-Evaluation
-FID (Fréchet Inception Distance)
-python fid_final.py
+```bash
+python evaluation/compute_fid.py
+```
 
-Saved to:
+### KID
 
-outputs/metrics/fid.json
-KID (Kernel Inception Distance)
-python kid.py
+```bash
+python evaluation/compute_kid.py
+```
 
-Saved to:
+---
 
-outputs/metrics/kid.json
-Results
-FID: ~75.6
-KID: ~0.045
+## Results
 
-The model produces recognizable face-like structures. Reverse diffusion demonstrates gradual denoising from Gaussian noise to structured images.
+| Metric | Value           |
+| ------ | --------------- |
+| FID    | ~75             |
+| KID    | 0.0369 ± 0.0027 |
 
-Key Observations
-Cosine noise schedule improves stability
-DDIM sampling provides clearer intermediate denoising
-EMA improves generation quality
-Limited training results in slight blur and artifacts
-Limitations
-Moderate FID due to limited training duration
-Some color bias in outputs
-No conditional generation (unconditional model only)
-Requirements
-torch >= 2.0
-torchvision >= 0.15
-numpy
-Pillow
-tqdm
-scipy
-scikit-learn
+Generated samples:
 
-Conclusion
+```
+outputs/images/generated_epoch60.png
+```
 
-This implementation demonstrates diffusion-based image generation using DDPM, including forward and reverse processes, stable sampling, and evaluation using FID and KID.
+---
+
+## Notes
+
+* Dataset and checkpoints are excluded due to size constraints
+* Place trained model in `checkpoints/` before generation
+* Dataset should be located in `data/celeba_hq/`
+
+---
+
+## Conclusion
+
+This implementation demonstrates diffusion-based image generation using DDPM, including forward and reverse processes, stable sampling, and quantitative evaluation using FID and KID.
