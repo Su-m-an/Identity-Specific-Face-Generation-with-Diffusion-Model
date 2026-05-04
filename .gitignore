@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual env
+.venv/
+venv/
+
+# Data (DO NOT PUSH DATASET)
+data/
+
+# Outputs
+outputs/images/generated/
+outputs/images/*.png
+
+# Checkpoints (optional - keep only best)
+checkpoints/*.pt
+!checkpoints/unet_epoch_60.pt
+
+# System
+.DS_Store
