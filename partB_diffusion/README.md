@@ -6,32 +6,34 @@ This project implements a Denoising Diffusion Probabilistic Model (DDPM) using a
 ---
 
 ## Project Structure
-partB_unet/
+
+```
+partB_diffusion/
+├── src/
+│   ├── model.py              # UNet architecture
+│   ├── scheduler.py          # DDPM scheduler (cosine schedule)
+│   ├── train.py              # Training script
+│   └── generate.py           # Sampling (DDIM)
 │
-├── model.py # UNet architecture
-├── scheduler.py # DDPM scheduler (cosine noise schedule)
-├── train.py # Training script
-├── generate.py # Image generation (DDIM sampling)
-├── diffusion_visualize_final.py # Forward & reverse diffusion visualization
-├── fid_final.py # FID computation
-├── kid.py # KID computation
+├── evaluation/
+│   ├── compute_fid.py        # FID computation
+│   └── compute_kid.py        # KID computation
 │
-├── checkpoints/
-│ └── unet_epoch_60.pt # Trained model
+├── visualization/
+│   ├── diffusion_visualize.py   # Forward and reverse diffusion
+│   └── plot_loss.py             # Training loss curve
 │
 ├── outputs/
-│ ├── images/
-│ │ ├── generated/ # Individual generated images
-│ │ ├── generated_epoch60.png # Grid of generated samples
-│ │ ├── forward_diffusion.png
-│ │ └── reverse_diffusion.png
-│ │
-│ └── metrics/
-│ ├── fid.json
-│ └── kid.json
+│   ├── images/               # Generated samples
+│   └── metrics/              # FID and KID scores
 │
-└── data/
-└── celeba_hq/ # Dataset
+├── checkpoints/              # Model weights (not included)
+├── data/                     # Dataset (not included)
+│   └── celeba_hq/
+│
+├── requirements.txt
+└── README.md
+```
 
 ---
 
